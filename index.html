@@ -1,0 +1,109 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+ <meta charset="utf-8">
+
+ <title>COVID test scanner</title>
+ <meta name="description" content="COVID test scanner">
+
+ <link rel="stylesheet" href="css/styles.css">
+ <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+</head>
+<body>
+  <div class="container">
+    <div class="topline-results">
+      Pos/Neg/Inc
+    </div>
+    <h4><p id=instructions>Take a picture of your completed COVID-19 test card.</p></h4>
+    <p id=explanation>Detail text with additional info</p>
+    <div class = "instr-list-top">
+      <ul>
+        <li>Make sure each sample has filled the entire sample region</li>
+        <li>Take a well-lit picture with a clean background</li>
+        <li>Make sure the QR code markers are fully visible</li>
+      </ul>
+    </div>
+    <div class="wrapper">
+      <div class="image">
+        <img src="images/blank.png">
+      </div>
+      <div class="content">
+        <div class="icon">
+          <i class="fas fa-cloud-upload-alt"></i>
+        </div>
+        <div class="text">
+          No image selected, yet!
+        </div>
+      </div>
+<!--       <div id="cancel-btn">
+        <i class="fas fa-times"></i>
+      </div>
+      <div class="file-name">
+        File name here
+      </div>          -->
+    </div>
+    <button onclick="defaultBtnActive()" id="custom-btn">Choose an image</button>
+    <div class = "instr-list-bottom">
+      <ul>
+        <li>Make sure each sample has filled the entire sample region</li>
+        <li>Take a well-lit picture with a clean background</li>
+        <li>Make sure the QR code markers are fully visible</li>
+      </ul>
+    </div>
+    <input id="default-btn" type="file" accept="image/*" hidden>
+    <canvas id="imageCanvas" hidden></canvas>
+  </div>
+  <script>
+    var wrapper = document.querySelector(".wrapper");
+    // var fileName = document.querySelector(".file-name");
+    var defaultBtn = document.querySelector("#default-btn");
+    var customBtn = document.querySelector("#custom-btn");
+    // var cancelBtn = document.querySelector("#cancel-btn i");
+    var img = document.querySelector("img");
+    var regExp = /[0-9a-zA-Z\^\&\'\@\{\}\[\]\,\$\=\!\-\#\(\)\.\%\+\~\_ ]+$/;
+    
+    var canvas = document.getElementById('imageCanvas');
+    var ctx = canvas.getContext('2d');
+
+    function defaultBtnActive(){
+      defaultBtn.click();
+    }
+    defaultBtn.addEventListener("change", function(){
+      var file = this.files[0];
+      if (file) {
+        var reader = new FileReader();
+        reader.onload = function(){
+          var result = reader.result;
+          img.src = result;
+          wrapper.classList.add("active");
+          var testerImg = new Image();
+          testerImg.onload = function() {
+            canvas.width = testerImg.width;
+            canvas.height = testerImg.height;
+            ctx.drawImage(testerImg, 0, 0);
+            var result = covidTest(ctx, testerImg.width, testerImg.height);
+            displayResult(result);
+          };
+          testerImg.src = result;
+        };
+        // cancelBtn.addEventListener("click", function(){
+        //   img.src = "images/blank.png";
+        //   wrapper.classList.remove("active");
+        // });
+        customBtn.innerHTML = 'Change image';
+        // customBtn.style.background = "linear-gradient(135deg,#c2c2c2 0%,#9c9c9c 100%)";
+        // customBtn.style.background = "#9796a3";
+
+        reader.readAsDataURL(file);
+      }
+      if(this.value){
+        var valueStore = this.value.match(regExp);
+        // fileName.textContent = valueStore;
+      }
+    });
+  </script>
+  <script src="js/covidtest.js"></script>
+</body>
+</html>
